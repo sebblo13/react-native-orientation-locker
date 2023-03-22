@@ -134,14 +134,23 @@ static UIInterfaceOrientationMask _orientationMask = UIInterfaceOrientationMaskA
     // set a flag so that no deviceOrientationDidChange events are sent to JS
     _isLocking = YES;
     NSString* orientation = @"orientation";
-    
+    NSLog(@"Enter in lockToOrientation");
     UIInterfaceOrientation deviceOrientation = _lastDeviceOrientation;
     
     [Orientation setOrientation:mask];
 
     if (@available(iOS 16.0, *)) {
         NSArray *array = [[[UIApplication sharedApplication] connectedScenes] allObjects];
-        UIWindowScene *scene = (UIWindowScene *)array[0];    UIWindowSceneGeometryPreferencesIOS *geometryPreferences = [[UIWindowSceneGeometryPreferencesIOS alloc] initWithInterfaceOrientations:mask];
+        //UIWindowScene *scene = (UIWindowScene *)array[0];
+        UIWindowScene *scene = nil;
+        NSLog(@"Loop scenes");
+        for (UIWindowScene* sc in array){
+            if (sc.keyWindow){
+                NSLog(@"scene is key window");
+                scene = sc;
+            }
+        }
+        UIWindowSceneGeometryPreferencesIOS *geometryPreferences = [[UIWindowSceneGeometryPreferencesIOS alloc] initWithInterfaceOrientations:mask];
         [scene requestGeometryUpdateWithPreferences:geometryPreferences errorHandler:^(NSError * _Nonnull error) { }];
     } else {
         UIDevice* currentDevice = [UIDevice currentDevice];
